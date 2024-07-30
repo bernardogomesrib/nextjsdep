@@ -1,0 +1,231 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+ 
+generator client {
+  provider = "prisma-client-js"
+}
+ 
+model User {
+  id            String          @db.Char(25) @id @default(cuid())
+  name          String?
+  username      String?         @unique
+  email         String?         @unique
+  emailVerified DateTime?
+  image         String?
+  password      String
+  telephone     String?
+  Session       Session[]
+  Account       Account?
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  roles     Roles[]
+  Saida     Saida[]
+  Entrada   Entrada[]
+}
+
+model Roles {
+  id        Int        @id @default(autoincrement())
+  roleName  String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  userS     User[]
+}
+
+
+model Produto {
+  id                   String           @db.Char(25)@id @default(cuid())
+  nome                 String
+  tipoId               BigInt
+  codigo               String           @unique
+  quantidade           Decimal
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  Validade             Validade[]
+  principiosAtivos      PrincipioAtivo[]
+  tipoProduto          TipoProduto      @relation(fields: [tipoId], references: [id])
+  Saida                Saida[]
+  Entrada              Entrada[]
+}
+
+model TipoProduto {
+  id        BigInt    @id @default(autoincrement())
+  name      String    @db.VarChar(1024)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Produto   Produto[]
+}
+
+model Validade {
+  id BigInt   @id @default(autoincrement())
+  validade             DateTime
+  data_fabricacao      DateTime
+  lote                 String
+  produtoId            String @db.Char(25)
+  quantidade           Decimal
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  Produto              Produto  @relation(fields: [produtoId], references: [id])
+  Saida                Saida[]
+  Entrada              Entrada[]
+}
+
+model PrincipioAtivo {
+  id        BigInt   @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  produtos  Produto[]
+}
+
+model InstituicoesParceiras {
+  id        String   @db.Char(25) @id @default(cuid())
+  cnpj      String     @db.Char(14) @unique
+  nome      String
+  endereco  String
+  telefone  String
+  email     String?
+  detalhes  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Saida     Saida[]
+  Entrada   Entrada[]
+}
+
+model TipoEntrada {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Entrada   Entrada[]
+}
+
+model TipoSaida {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Saida     Saida[]
+}
+
+model Saida {
+  id                       BigInt                @id @default(autoincrement())
+  quantidade               Decimal
+  produtoId                String                 @db.Char(25)
+  validadeId               BigInt
+  instituicoes_parceirasId String?
+  userId                   String
+  tipoSaidaId               Int
+
+  Produto                   Produto               @relation(fields: [produtoId], references: [id])
+  Validade                  Validade              @relation(fields: [validadeId], references: [id])
+  InstituicoesParceiras     InstituicoesParceiras? @relation(fields: [instituicoes_parceirasId], references: [id])
+  User                      User                  @relation(fields: [userId], references: [id])
+  TipoSaida                 TipoSaida             @relation(fields: [tipoSaidaId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Entrada {
+  id                       BigInt                @id @default(autoincrement())
+  quantidade               Decimal
+  produtoId                String                 @db.Char(25)
+  validadeId               BigInt
+  instituicoes_parceirasId String?                 @db.Char(25)
+  userId                   String                 @db.Char(25)
+  tipoEntradaId            Int
+
+  Produto                   Produto               @relation(fields: [produtoId], references: [id])
+  Validade                  Validade              @relation(fields: [validadeId], references: [id])
+  InstituicoesParceiras     InstituicoesParceiras? @relation(fields: [instituicoes_parceirasId], references: [id])
+  User                      User                  @relation(fields: [userId], references: [id])
+  TipoEntrada               TipoEntrada           @relation(fields: [tipoEntradaId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Acolhido {
+  id        String   @db.Char(25) @id @default(cuid())
+  name      String
+  cpf       String   @unique
+  email     String
+  telephone String?
+  ativo     Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ViaDeAdministracao {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// provavelmente não vão ser utilizadas estas classes mas é o padrão
+// que me deram para quando fosse criar com o prisma o banco de dados para usuários...
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String  @unique
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
+  access_token             String? @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
+  refresh_token_expires_in Int?
+  user                     User?   @relation(fields: [userId], references: [id])
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+ 
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id])
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  @@index([userId])
+}
+ 
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@unique([identifier, token])
+}
+ 
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@id([userId, credentialID])
+}
