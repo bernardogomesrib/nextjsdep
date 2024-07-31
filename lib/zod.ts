@@ -100,4 +100,5 @@ export const SaidaSchema = z.object({
   instituicoes_parceirasId: z.string().optional(),
   userId: z.string({ message: "Usuário é obrigatório!" }),
   tipoSaidaId: z.number({ message: "Tipo de saída é obrigatório!" }).min(1, "Tipo de saída é obrigatório."),
+  
 });

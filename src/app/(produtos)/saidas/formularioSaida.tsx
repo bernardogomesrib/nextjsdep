@@ -89,14 +89,17 @@ export default function FormularioParaSaida({ tipoSaida, user }: { tipoSaida: Ti
     const salvarSaidaLocal = async () => {
         try {
             
-
+            if(quantidadeSaida>resultadoPesquisa.quantidade){
+                setError("Quantidade de saida não pode ser maior que a quantidade na validade");
+                return;
+            }
             if (instituicaoParceira != null) {
                 console.log("instituição parceira não é nula")
-                SaidaSchema.parse({ quantidade: quantidadeSaida, produtoId: resultadoPesquisa.Produto.id, validadeId: resultadoPesquisa.id, instituicoes_parceirasId: instituicaoParceira.id, userId: user.id, tipoSaidaId: Number(tipoSaidaSelecionado)});
+                SaidaSchema.parse({ quantidade: quantidadeSaida, produtoId: resultadoPesquisa.Produto.id, validadeId: resultadoPesquisa.id, instituicoes_parceirasId: instituicaoParceira.id, userId: user.id, tipoSaidaId: Number(tipoSaidaSelecionado),quantidadeNaValidade:resultadoPesquisa.quantidade as number});
                 console.log("passou teste")
             }else {
                 console.log("testou ")
-                SaidaSchema.parse({ quantidade: quantidadeSaida, produtoId: resultadoPesquisa.Produto.id, validadeId: resultadoPesquisa.id, userId: user.id, tipoSaidaId: Number(tipoSaidaSelecionado) });
+                SaidaSchema.parse({ quantidade: quantidadeSaida, produtoId: resultadoPesquisa.Produto.id, validadeId: resultadoPesquisa.id, userId: user.id, tipoSaidaId: Number(tipoSaidaSelecionado),quantidadeNaValidade:resultadoPesquisa.quantidade as number });
                 console.log("terminou teste e passou")
             }
 
@@ -105,16 +108,16 @@ export default function FormularioParaSaida({ tipoSaida, user }: { tipoSaida: Ti
                 const result = await salvarSaida(quantidadeSaida, resultadoPesquisa.Produto.id, resultadoPesquisa.id, instituicaoParceira?.id, user.id, Number(tipoSaidaSelecionado));
                 if (result) {
                     console.log("saida salva com sucesso");
-                    <AlertDialogFunc title="Viva!" description="Saida salva com sucesso" />
+                    alert("Saida salva com sucesso");
                     zerarTodasVariaveis();
                 }
             } else if (quantidadeSaida === 0) {
-                <AlertDialogFunc title="Atenção!" description="Quantidade de saida não pode ser 0!" />
+                alert("Quantidade de saida não pode ser 0");
                 setError("Quantidade de saida não pode ser 0");
 
             }
         } catch (error: any) {
-            console.log(error);
+            //console.log(error);
             if (error instanceof z.ZodError) {
                 const newErrors: Record<string, string> = {};
                 error.errors.forEach((err) => {
@@ -124,6 +127,11 @@ export default function FormularioParaSaida({ tipoSaida, user }: { tipoSaida: Ti
                 });
                 setErrors(newErrors);
                 return;
+            }
+            if (error instanceof Error) {
+                setError(error.message);
+            }else{
+                console.log(error)
             }
         }
     }

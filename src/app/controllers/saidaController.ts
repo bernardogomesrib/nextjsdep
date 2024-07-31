@@ -1,8 +1,6 @@
 "use server";
 import db from "../../../lib/db";
 
-
-
 export async function salvarSaida(quantidade:number,produtoId:string,validadeId:bigint,instituicoes_parceirasId:string|undefined,userId:string,tipoSaidaId:number){
     const resultado = db.$transaction(async (prisma) => {
         const saida = await db.saida.create({
@@ -35,7 +33,36 @@ export async function salvarSaida(quantidade:number,produtoId:string,validadeId:
                 }
             }
         });
-        return {saida,produto,validade};
+        let newSaida = {
+            id: saida.id,
+            quantidade: saida.quantidade.toNumber(),
+            produtoId: saida.produtoId,
+            validadeId: saida.validadeId,
+            instituicoes_parceirasId: saida.instituicoes_parceirasId,
+            userId: saida.userId,
+            tipoSaidaId: saida.tipoSaidaId,
+            createdAt: saida.createdAt,
+            updatedAt: saida.updatedAt,
+        }
+        const newProduto = {
+            id: produto.id,
+            nome: produto.nome,
+            quantidade: produto.quantidade.toNumber(),
+            codigo: produto.codigo,
+            createdAt: produto.createdAt,
+            updatedAt: produto.updatedAt,
+        }
+        const newValidade={
+            id: validade.id,
+            validade: validade.validade,
+            quantidade: validade.quantidade.toNumber(),
+            lote: validade.lote,
+            fabricacao: validade.data_fabricacao,
+            produtoId: validade.produtoId,
+            createdAt: validade.createdAt,
+            updatedAt: validade.updatedAt,
+        }
+        return {saida:newSaida,produto:newProduto,validade:newValidade};
     });
     
     return resultado;
