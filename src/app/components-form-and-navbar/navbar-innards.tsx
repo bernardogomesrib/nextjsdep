@@ -6,17 +6,14 @@ import {
   Disclosure,
   DisclosureButton,
   DisclosurePanel,
-  Popover,
-  PopoverButton,
-  PopoverGroup,
-  PopoverPanel,
+  PopoverGroup
 } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import {
   Bars3Icon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
-import { useState } from "react";
+import React, { useState } from "react";
 import { LogoutLoginButton } from './logout-login-button';
 
 const idosos = [
@@ -28,6 +25,9 @@ const estoque = [
   { name: 'Atualizar estoque', description: 'atualizar os produtos ou inserir novos', href: '/produtos' },
   { name: 'Registrar saidas', description: 'registrar saidas de produtos', href: '/saidas' },
 ]
+let links:any =[];
+links.push({title:"Idosos",component:idosos})
+links.push({title:"Estoque",component:estoque})
 /* const callsToAction = [
   { name: 'Watch demo', href: '#', icon: PlayCircleIcon },
   { name: 'Contact sales', href: '#', icon: PhoneIcon },
@@ -37,9 +37,9 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu';
+import { cn } from '@/lib/utils';
 import { User } from "next-auth";
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { LogoCristo } from './logo/logoCristo';
 
 type Props = {
@@ -47,9 +47,9 @@ type Props = {
 };
 
 export function NavbarInnards({ user }: Props) {
-  const router = useRouter();
+  
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [mobileMenuOpen2, setMobileMenuOpen2] = useState(false)
+  
   const Logo = LogoCristo;
 
   return (<>
@@ -73,99 +73,33 @@ export function NavbarInnards({ user }: Props) {
       {
         user?.name ? (<>
           <PopoverGroup className="hidden lg:flex lg:gap-x-12">
+      
+          <NavigationMenu>
+      <NavigationMenuList>
+      {
+        links.map((link:any) => (
+          <NavigationMenuItem key={link.title}>
+            <NavigationMenuTrigger className="bg-transparent rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">{link.title}</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[350px] gap-3 p-4  md:grid-cols-1">
+                {link.component.map((component:any) => (
+                  <ListItem
+                    key={component.name}
+                    title={component.name}
+                    href={component.href}
+                  >
+                    {component.description}
+                  </ListItem>
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        ))
+      }
 
-            <Popover className="relative">
-
-              <PopoverButton className="flex items-center -mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
-                {/* -mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 */}
-                Idosos
-                <ChevronDownIcon className="h-5 w-5 flex-none text-gray-700" aria-hidden="true" />
-              </PopoverButton>
-              <PopoverPanel
-                transition
-                className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
-              >
-                <div className="p-4">
-                  {idosos.map((item) => (
-                    <div
-                      key={item.name}
-                      className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50"
-                    >
-                      {/* <div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-gray-50">
-                        <item.icon className="h-6 w-6 text-gray-600 group-hover:text-indigo-600" aria-hidden="true" />
-                      </div> */}
-                      <div className="flex-auto">
-                        <Link href={item.href} className="block font-semibold text-gray-900">
-                          {item.name}
-                          <span className="absolute inset-0" />
-                        </Link>
-                        <p className="mt-1 text-gray-600">{item.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
-                  {/* {callsToAction.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100"
-                    >
-                      <item.icon className="h-5 w-5 flex-none text-gray-400" aria-hidden="true" />
-                      {item.name}
-                    </a>
-                    
-                  ))} */}
-                </div>
-              </PopoverPanel>
-
-            </Popover>
-            <Popover className="relative">
-
-              <PopoverButton className="flex items-center -mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
-                {/* -mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 */}
-                Estoque
-                <ChevronDownIcon className="h-5 w-5 flex-none text-gray-700" aria-hidden="true" />
-              </PopoverButton>
-              <PopoverPanel
-                transition
-                className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
-              >
-                <div className="p-4">
-                  {estoque.map((item) => (
-                    <div
-                      key={item.name}
-                      className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50"
-                    >
-                      {/* <div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-gray-50">
-                        <item.icon className="h-6 w-6 text-gray-600 group-hover:text-indigo-600" aria-hidden="true" />
-                      </div> */}
-                      <div className="flex-auto">
-                        <Link href={item.href} className="block font-semibold text-gray-900">
-                          {item.name}
-                          <span className="absolute inset-0" />
-                        </Link>
-                        <p className="mt-1 text-gray-600">{item.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
-                  {/* {callsToAction.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100"
-                    >
-                      <item.icon className="h-5 w-5 flex-none text-gray-400" aria-hidden="true" />
-                      {item.name}
-                    </a>
-                    
-                  ))} */}
-                </div>
-              </PopoverPanel>
-
-            </Popover>
+      </NavigationMenuList>
+    </NavigationMenu>
+    
           </PopoverGroup>
           
         </>) : null
@@ -262,3 +196,30 @@ export function NavbarInnards({ user }: Props) {
   </>
   );
 }
+
+
+export const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  )
+})
+ListItem.displayName = "ListItem"

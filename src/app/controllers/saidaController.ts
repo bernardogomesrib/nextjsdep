@@ -3,18 +3,42 @@ import db from "../../../lib/db";
 
 
 
-export async function salvarSaida(quantidade:string,produtoId:string,validadeId:bigint,instituicoes_parceirasId:string,userId:string,tipoSaidaId:number){
-    const result = await db.saida.create({
-        data:{
-            quantidade:quantidade,
-            produtoId:produtoId,
-            validadeId:validadeId,
-            instituicoes_parceirasId:instituicoes_parceirasId,
-            userId:userId,
-            tipoSaidaId:tipoSaidaId
-        }
-    })
-    return result;
+export async function salvarSaida(quantidade:number,produtoId:string,validadeId:bigint,instituicoes_parceirasId:string|undefined,userId:string,tipoSaidaId:number){
+    const resultado = db.$transaction(async (prisma) => {
+        const saida = await db.saida.create({
+            data:{
+                quantidade:quantidade,
+                produtoId:produtoId,
+                validadeId:validadeId,
+                instituicoes_parceirasId:instituicoes_parceirasId,
+                userId:userId,
+                tipoSaidaId:tipoSaidaId
+            }
+        });
+        const produto = await db.produto.update({
+            where:{
+                id:produtoId
+            },
+            data:{
+                quantidade:{
+                    decrement:quantidade
+                }
+            }
+        });
+        const validade = await db.validade.update({
+            where:{
+                id:validadeId
+            },
+            data:{
+                quantidade:{
+                    decrement:quantidade
+                }
+            }
+        });
+        return {saida,produto,validade};
+    });
+    
+    return resultado;
 }
 
 

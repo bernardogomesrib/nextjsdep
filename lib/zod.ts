@@ -92,3 +92,12 @@ export const ValidadeSchema = z.object({
     return true;
   }),
 });
+
+export const SaidaSchema = z.object({
+  quantidade: z.number({ message: "Quantidade é obrigatória!" }).min(1, "Quantidade deve ser maior que 0."),
+  produtoId: z.string({ message: "Produto é obrigatório!" }),
+  validadeId: z.bigint({ message: "Validade é obrigatória!" }),
+  instituicoes_parceirasId: z.string().optional(),
+  userId: z.string({ message: "Usuário é obrigatório!" }),
+  tipoSaidaId: z.number({ message: "Tipo de saída é obrigatório!" }).min(1, "Tipo de saída é obrigatório."),
+});

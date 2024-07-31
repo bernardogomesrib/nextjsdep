@@ -1,6 +1,5 @@
 import { AlertCircle, CheckCircle } from "lucide-react";
 
-import React from "react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 interface AuthFormMessageProps {
 	title?: string;
@@ -9,7 +8,7 @@ interface AuthFormMessageProps {
 }
 const AuthFormMessage = ({ message, type, title }: AuthFormMessageProps) => {
 	return (
-		<Alert variant={type}>
+		<Alert>
 			{type === "success" ? <CheckCircle className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
 			{title && <AlertTitle>{title}</AlertTitle>}
 			<AlertDescription>{message}</AlertDescription>

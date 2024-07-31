@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 
-import AuthFormMessage from "@/components/quadradoErro";
+import AuthFormMessage from "@/components/error/errorcard";
 import { useState } from "react";
 import login from "../_actions/login";
 

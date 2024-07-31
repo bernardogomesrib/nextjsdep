@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 
-import AuthFormMessage from "@/components/quadradoErro";
+import AuthFormMessage from "@/components/error/errorcard";
 import React from "react";
 import register from "../_actions/register";
 //import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@radix-ui/react-select";
