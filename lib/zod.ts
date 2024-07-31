@@ -70,7 +70,7 @@ export const ValidadeSchema = z.object({
   }),
   quantidade: z.number({ message: "Quantidade é obrigatória!" }).min(1, "Quantidade deve ser maior que 0."),
   lote: z.string({ message: "Lote é obrigatório" }).min(3, "Lote é obrigatório."),
-  fabricacao: z.date({ message: "Data de fabricação é obrigatória" }).superRefine((value: Date, context: RefinementCtx): boolean => {
+  fabricacao: z.date({ message: "Data de fabricação é obrigatória" }).superRefine((value: Date, context: any): boolean => {
     const currentDate = new Date();
     if (value >= currentDate) {
       context.addIssue({
@@ -81,7 +81,7 @@ export const ValidadeSchema = z.object({
       return z.NEVER;
     }
     try {
-      const validade = (context.path.find((x) => x.key === "validade") as { key: string })?.value;
+      const validade = (context.path.find((x:any) => x.key === "validade"))?.value;
     if (validade && value >= validade) {
       context.addIssue({
         code: ZodIssueCode.custom,
@@ -110,5 +110,4 @@ export const SaidaSchema = z.object({
   instituicoes_parceirasId: z.string().optional(),
   userId: z.string({ message: "Usuário é obrigatório!" }),
   tipoSaidaId: z.number({ message: "Tipo de saída é obrigatório!" }).min(1, "Tipo de saída é obrigatório."),
-  
 });
