@@ -151,9 +151,49 @@ export function FormularioParaProduto({ tipoEntrada, user }: { tipoEntrada: Tipo
             };
 
             try {
+                console.log("ta testando")
                 ValidadeSchema.parse(val);
-                console.log("Chegou aqui");
+                console.log("Chegou aqui - testou e deu certo");
+                if (instituicaoParceira === null) {
+                    const tipoEntrada = parseInt(formData.get('tipoEntrada') as string, 10);
+                    if (val.validade && val.fabricacao && user.id && produto.id && tipoEntrada != 4 && tipoEntrada) {
+                        const res = await CriarValidade(val.lote, val.quantidade, val.validade, val.fabricacao, produto.id, tipoEntrada, user.id, null);
+    
+                        console.log(res);
+                        if (res.success === false) {
+                            setError("Erro ao salvar a validade! \n" + res.error);
+                        } else if (res.success === true && res.entrada) {
+                            alert("Entrada cadastrada com sucesso!");
+                            zerarTodasVariaveis();
+                        }
+                    } else {
+                        setError('Erro ao criar validade, verifique se todos os campos estão preenchidos');
+                    }
+                } else {
+                    const tipoEntrada = parseInt(formData.get('tipoEntrada') as string, 10);
+                    if (val.validade && val.fabricacao && user.id && produto.id && (instituicaoParceira?.id || tipoEntrada != 4) && tipoEntrada) {
+                        const res = await CriarValidade(val.lote, val.quantidade, val.validade, val.fabricacao, produto.id, tipoEntrada, user.id, instituicaoParceira.id);
+    
+                        console.log(res);
+                        if (res.success === false) {
+                            setError("Erro ao salvar a validade! \n" + res.error);
+                        } else if (res.success === true && res.entrada) {
+                            alert("Entrada cadastrada com sucesso!");
+                            zerarTodasVariaveis();
+                        }
+                    } else {
+                        console.log(val.validade);
+                        console.log(val.fabricacao);
+                        console.log(user.id);
+                        console.log(produto.id);
+                        console.log(instituicaoParceira?.id);
+                        console.log(tipoEntrada);
+                        setError('Erro ao criar validade, verifique se todos os campos estão preenchidos');
+                    }
+                }
             } catch (error) {
+                console.log(error);
+
                 if (error instanceof z.ZodError) {
                     const newErrors: Record<string, string> = {};
                     error.errors.forEach((err) => {
@@ -165,43 +205,7 @@ export function FormularioParaProduto({ tipoEntrada, user }: { tipoEntrada: Tipo
                     return; // Saia da função se houver erros de validação
                 }
             }
-            if (instituicaoParceira === null) {
-                const tipoEntrada = parseInt(formData.get('tipoEntrada') as string, 10);
-                if (val.validade && val.fabricacao && user.id && produto.id && tipoEntrada != 4 && tipoEntrada) {
-                    const res = await CriarValidade(val.lote, val.quantidade, val.validade, val.fabricacao, produto.id, tipoEntrada, user.id, null);
-
-                    console.log(res);
-                    if (res.success === false) {
-                        setError("Erro ao salvar a validade! \n" + res.error);
-                    } else if (res.success === true && res.entrada) {
-                        alert("Entrada cadastrada com sucesso!");
-                        zerarTodasVariaveis();
-                    }
-                } else {
-                    setError('Erro ao criar validade, verifique se todos os campos estão preenchidos');
-                }
-            } else {
-                const tipoEntrada = parseInt(formData.get('tipoEntrada') as string, 10);
-                if (val.validade && val.fabricacao && user.id && produto.id && (instituicaoParceira?.id || tipoEntrada != 4) && tipoEntrada) {
-                    const res = await CriarValidade(val.lote, val.quantidade, val.validade, val.fabricacao, produto.id, tipoEntrada, user.id, instituicaoParceira.id);
-
-                    console.log(res);
-                    if (res.success === false) {
-                        setError("Erro ao salvar a validade! \n" + res.error);
-                    } else if (res.success === true && res.entrada) {
-                        alert("Entrada cadastrada com sucesso!");
-                        zerarTodasVariaveis();
-                    }
-                } else {
-                    console.log(val.validade);
-                    console.log(val.fabricacao);
-                    console.log(user.id);
-                    console.log(produto.id);
-                    console.log(instituicaoParceira?.id);
-                    console.log(tipoEntrada);
-                    setError('Erro ao criar validade, verifique se todos os campos estão preenchidos');
-                }
-            }
+            
 
         } catch (error) {
             console.log(error);

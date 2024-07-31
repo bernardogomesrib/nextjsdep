@@ -1,4 +1,4 @@
-import { getFilteredRowModel } from '@tanstack/react-table';
+"use client";
 import { object, RefinementCtx, string, z, ZodIssueCode } from "zod";
 
 export const signInSchema = object({
@@ -80,7 +80,8 @@ export const ValidadeSchema = z.object({
       });
       return z.NEVER;
     }
-    const validade = getFilteredRowModel().arguments.validade;
+    try {
+      const validade = (context.path.find((x) => x.key === "validade") as { key: string })?.value;
     if (validade && value >= validade) {
       context.addIssue({
         code: ZodIssueCode.custom,
@@ -89,6 +90,15 @@ export const ValidadeSchema = z.object({
       });
       return z.NEVER;
     }
+    } catch (error) {
+      context.addIssue({
+        code: ZodIssueCode.custom,
+        message: "Ocorreu um erro que impede a validação da data de fabricação.",
+        fatal: true,
+      });
+      return z.NEVER;
+    }
+    
     return true;
   }),
 });
