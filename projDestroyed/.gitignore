@@ -1,0 +1,8 @@
+.env
+/.env
+/.env/
+/new/farmacia/.env
+/old/.env
+
+
+node_modules
